@@ -270,6 +270,7 @@ void analyze_segments(char* sample_segment, char** candidate_segments, int numbe
             strcat(outputline_buffer, " is a perfect match\n");
             strcpy(output_string, outputline_buffer);
         }
+        has_perfect_match++;
     }
 
     /* Hint: Return early if we have found and reported perfect match(es) */
@@ -368,34 +369,34 @@ int calculate_score(char* sample_segment, char* candidate_segment)
             candidate[i + 1] = candidate_segment[i + 1];
             candidate[i + 2] = candidate_segment[i + 2];
             char amino_check_candidate[] = { candidate[i], candidate[i + 1], candidate[i + 2] };
-            temp_score = 0;
+            score = 0;
 
             if (strcmp(sample, candidate) == 0) {
-                temp_score += 10;
+                score += 10;
             }
             else {
                 amino_a = find_amino(amino_check_sample);
                 amino_b = find_amino(amino_check_candidate);
 
                 if (strcmp(amino_a, amino_b) == 0) {
-                    temp_score = 5;
+                    score = 5;
                 }
                 else {
                     for (int j = 0; j < 3; j++) {
                         if (sample[j] == candidate[j]) {
-                            temp_score = 2;
+                            score = 2;
                         }
                         else if ((sample[j] == 'A') && (candidate[j]) == 'T') {
-                            temp_score = 1;
+                            score = 1;
                         }
                         else if ((sample[j] == 'T') && (candidate[j]) == 'A') {
-                            temp_score = 1;
+                            score = 1;
                         }
                         else if ((sample[j] == 'C') && (candidate[j]) == 'G') {
-                            temp_score = 1;
+                            score = 1;
                         }
                         else if ((sample[j] == 'G') && (candidate[j]) == 'C') {
-                            temp_score = 1;
+                            score = 1;
                         }
                     }
                 }
