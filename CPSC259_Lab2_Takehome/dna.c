@@ -264,7 +264,7 @@ void analyze_segments(char* sample_segment, char** candidate_segments, int numbe
 
     for (i; i < number_of_candidates; i++) {
         if (strcmp(sample_segment, candidate_segments[i]) == 0) {
-            sprinf(int_buffer, "%d", i + 1); //Need the i+1 because this is coverting the candidate number into a string. Candidate numbers start at 1
+            sprintf(int_buffer, "%d", i + 1); //Need the i+1 because this is coverting the candidate number into a string. Candidate numbers start at 1
             strcat(outputline_buffer, "Candidate number "); //Concate Candidate number " to outputline_buffer moving NULL
             strcat(outputline_buffer, int_buffer);
             strcat(outputline_buffer, " is a perfect match\n");
@@ -286,11 +286,11 @@ void analyze_segments(char* sample_segment, char** candidate_segments, int numbe
     char score_buffer[BUFSIZE];
     for (i = 0; i < number_of_candidates; ++i) {
         score = calculate_score(sample_segment, candidate_segments[i]);
-        sprinf(int_buffer, "%d", i + 1); //Copies
+        sprintf(int_buffer, "%d", i + 1); //Copies
         strcat(outputline_buffer, "Candidate number ");
         strcat(outputline_buffer, int_buffer);
         strcat(outputline_buffer, " matches with a score of ");
-        sprinf(score_buffer, "%d", score);
+        sprintf(score_buffer, "%d", score);
         strcat(outputline_buffer, score_buffer);
         strcpy(output_string, outputline_buffer);
 
@@ -298,6 +298,15 @@ void analyze_segments(char* sample_segment, char** candidate_segments, int numbe
     return;
 }
 
+
+char* find_amino(char* codon) {
+    for (int i = 0; i < 64; i++) {
+        if (strncmp(codon, codon_codes[i], 3) == 0) {
+            return codon_names[i];
+        }
+    }
+    return NULL;
+}
 /*
  * Compares the sample segment and the candidate segment and calculates a
  * score based on these rules:
@@ -340,8 +349,8 @@ int calculate_score(char* sample_segment, char* candidate_segment)
 
     // Added variables
 
-    char* sample[BUFSIZE];
-    char* candidate[BUFSIZE];
+    char sample[BUFSIZE];
+    char candidate[BUFSIZE];
     char* amino_a;
     char* amino_b;
     int best_score = 0;
@@ -352,21 +361,21 @@ int calculate_score(char* sample_segment, char* candidate_segment)
         sample[iterations] = sample_segment[iterations];
         sample[iterations + 1] = sample_segment[iterations + 1];
         sample[iterations + 2] = sample_segment[iterations + 2];
-        char* amino_check_sample[] = { sample[iterations], sample[iterations + 1], sample[iterations + 2] };
+        char amino_check_sample[] = { sample[iterations], sample[iterations + 1], sample[iterations + 2] };
 
         for (int i = 0; i < candidate_length; i += 3) {
             candidate[i] = candidate_segment[i];
             candidate[i + 1] = candidate_segment[i + 1];
             candidate[i + 2] = candidate_segment[i + 2];
-            char* amino_check_candidate[] = { candidate[i], candidate[i + 1], candidate[i + 2] };
+            char amino_check_candidate[] = { candidate[i], candidate[i + 1], candidate[i + 2] };
             temp_score = 0;
 
             if (strcmp(sample, candidate) == 0) {
                 temp_score += 10;
             }
             else {
-                amino_a = amino(amino_check_sample);
-                amino_b = amino(amino_check_candidate);
+                amino_a = find_amino(amino_check_sample);
+                amino_b = find_amino(amino_check_candidate);
 
                 if (strcmp(amino_a, amino_b) == 0) {
                     temp_score = 5;
@@ -398,15 +407,4 @@ int calculate_score(char* sample_segment, char* candidate_segment)
     }
 
     return best_score;
-}
-
-char* amino(char* codon) {
-    for (int i = 0; i < 64; i++) {
-        if (strncmp(codon, codon_codes[i], 3) == 0) {
-            return codon_names[i];
-        }
-        else {
-            return NULL;
-        }
-    }
 }
