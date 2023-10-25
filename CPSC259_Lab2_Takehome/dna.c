@@ -245,8 +245,6 @@ void analyze_segments(char* sample_segment, char** candidate_segments, int numbe
 {
   /* Some helpful variables you might want to use */
   int* scores = NULL;
-  int sample_length = 0;
-  int candidate_length = 0;
   int i = 0;
   int has_perfect_match = 0;
   int score = 0;
@@ -264,22 +262,39 @@ void analyze_segments(char* sample_segment, char** candidate_segments, int numbe
           strcat(outputline_buffer, int_buffer);
           strcat(outputline_buffer, " is a perfect match\n");*/
 
-  // Insert your code here
+  for(i ; i < number_of_candidates; i++){
+    if(strcmp(sample_segment, candidate_segments[i]) == 0){
+      sprinf(int_buffer, "%d", i+1); //Need the i+1 because this is coverting the candidate number into a string. Candidate numbers start at 1
+      strcat(outputline_buffer, "Candidate number "); //Concate Candidate number " to outputline_buffer moving NULL
+      strcat(outputline_buffer, int_buffer);
+      strcat(outputline_buffer, " is a perfect match\n");
+      strcpy(output_string, outputline_buffer);
+    }
+  }
 
   /* Hint: Return early if we have found and reported perfect match(es) */
 
-  // Insert your code here
+  if(has_perfect_match >= 1){
+    return;
+  }
 
   /* Hint: Otherwise we need to calculate and print all of the scores by invoking
      calculate_score for each candidate_segment. Write an output line for each
      candidate_segment and concatenate your line to output_string.
      Don't forget to clear your outputline_buffer for each new line*/
+
+  char score_buffer[BUFSIZE];
   for (i = 0; i < number_of_candidates; ++i) {
+    score = calculate_score(sample_segment, candidate_segments[i]);
+    sprinf(int_buffer, "%d", i+1); //Copies
+    strcat(outputline_buffer, "Candidate number ");
+    strcat(outputline_buffer, int_buffer);
+    strcat(outputline_buffer, " matches with a score of ");
+    sprinf(score_buffer, "%d", score);
+    strcat(outputline_buffer, score_buffer);
+    strcpy(output_string, outputline_buffer);
 
-    // Insert your code here - maybe a call to calculate_score?
   }
-
-  /* End of function */
   return;
 }
 
@@ -320,8 +335,35 @@ int calculate_score(char* sample_segment, char* candidate_segment)
   int iterations = 0;
   int sample_length = strlen(sample_segment);
   int candidate_length = strlen(candidate_segment);
-  int sample_length_in_codons = sample_length / 3;
+  int sample_length_in_codons = sample_length / 3; // If there are trailing nucleotides, this will ignore them 
+  int candidate_length_in_codons = candidate_length / 3; 
 
-  // Insert your code here (replace this return statement with your own code)
+  // Added variables
+
+  char* sample;
+  char* candidate;
+  char* amino_a
+
+
+  for(iteration = 0 ; iteration < sample_length; iteration+=3){ 
+    score = 0;
+    sample[i] = sample_segment[i];
+    sample[i+1] = sample_segment[i+1];
+    sample[i+2] = sample_segment[i+2];
+
+    for(int i = 0; i < candidate_length; i++3){
+      candidate[i] = candidate_segment[i];
+      candidate[i+1] = candidate_segment[i+1];
+      candidate[i+2] = candidate_segment[i+2];
+      temp_score = 0;
+      if(strcmp(sample, candidate) == 0){
+        temp_score += 10;
+      }
+      else if {
+
+      }
+    }
+  }
+
   return 0;
 }
