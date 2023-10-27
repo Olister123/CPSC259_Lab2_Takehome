@@ -265,7 +265,7 @@ void analyze_segments(char* sample_segment, char** candidate_segments, int numbe
     for (i; i < number_of_candidates; i++) {
         if (strcmp(sample_segment, candidate_segments[i]) == 0) {
             sprintf(int_buffer, "%d", i + 1); //Need the i+1 because this is coverting the candidate number into a string. Candidate numbers start at 1
-            strcat(outputline_buffer, "Candidate number "); //Concate Candidate number " to outputline_buffer moving NULL
+            sprintf(outputline_buffer, "Candidate number "); //Concate Candidate number " to outputline_buffer moving NULL
             strcat(outputline_buffer, int_buffer);
             strcat(outputline_buffer, " is a perfect match\n");
             strcpy(output_string, outputline_buffer);
@@ -288,10 +288,10 @@ void analyze_segments(char* sample_segment, char** candidate_segments, int numbe
     for (i = 0; i < number_of_candidates; ++i) {
         score = calculate_score(sample_segment, candidate_segments[i]);
         sprintf(int_buffer, "%d", i + 1); //Copies
-        strcat(outputline_buffer, "Candidate number ");
+        sprintf(outputline_buffer, "Candidate number ");
+        sprintf(score_buffer, "%d", score);
         strcat(outputline_buffer, int_buffer);
         strcat(outputline_buffer, " matches with a score of ");
-        sprintf(score_buffer, "%d", score);
         strcat(outputline_buffer, score_buffer);
         strcpy(output_string, outputline_buffer);
 
@@ -301,7 +301,7 @@ void analyze_segments(char* sample_segment, char** candidate_segments, int numbe
 
 
 char* find_amino(char* codon) {
-    for (int i = 0; i < 64; i++) {
+    for (int i = 0; i < 64; i++) { //64 is the number of codons in codon_codes[i]
         if (strncmp(codon, codon_codes[i], 3) == 0) {
             return codon_names[i];
         }
@@ -349,63 +349,46 @@ int calculate_score(char* sample_segment, char* candidate_segment)
     int candidate_length_in_codons = candidate_length / 3;
 
     // Added variables
-
-    char sample[BUFSIZE];
-    char candidate[BUFSIZE];
-    char* amino_a;
-    char* amino_b;
     int best_score = 0;
 
 
-    for (iterations = 0; iterations < sample_length; iterations += 3) {
+
+    for (iterations = 0; iterations < (candidate_length_in_codons - sample_length_in_codons + 1) * 3; iterations += 3) {//Need to take all of sample and compare it to segment, moving by 3 spaces each time
         score = 0;
-        sample[iterations] = sample_segment[iterations];
-        sample[iterations + 1] = sample_segment[iterations + 1];
-        sample[iterations + 2] = sample_segment[iterations + 2];
-        char amino_check_sample[] = { sample[iterations], sample[iterations + 1], sample[iterations + 2] };
+        char* sample = sample_segment;
+        char* candidate = candidate_segment + iterations;
 
-        for (int i = 0; i < candidate_length; i += 3) {
-            candidate[i] = candidate_segment[i];
-            candidate[i + 1] = candidate_segment[i + 1];
-            candidate[i + 2] = candidate_segment[i + 2];
-            char amino_check_candidate[] = { candidate[i], candidate[i + 1], candidate[i + 2] };
-            score = 0;
+        for (int i = 0; i < sample_length_in_codons; i++) { //Need to know amount of codons, helps compare codon one in segment, then codon two
 
-            if (strcmp(sample, candidate) == 0) {
+            if (strncmp(sample, candidate, 3) == 0) {
                 score += 10;
             }
             else {
-                amino_a = find_amino(amino_check_sample);
-                amino_b = find_amino(amino_check_candidate);
+                char amino_a[3] = {0, 0, 0}; //Check whether sample/candidate are aminos
+                char amino_b[3] = {0, 0, 0};
+                strncpy(amino_a, sample, 3);
+                strncpy(amino_b, sample, 3);
 
-                if (strcmp(amino_a, amino_b) == 0) {
-                    score = 5;
+                if (strncmp(amino_a, amino_b, 3) == 0) {
+                    score += 5;
                 }
                 else {
-                    for (int j = 0; j < 3; j++) {
-                        if (sample[j] == candidate[j]) {
-                            score = 2;
+                    for (int j = 0; j < 3; j++) { //If it's not a perfect match, or an amino, check for same letter
+                        if (sample_segment[j] == candidate_segment[j]) {
+                            score += 2;
                         }
-                        else if ((sample[j] == 'A') && (candidate[j]) == 'T') {
-                            score = 1;
-                        }
-                        else if ((sample[j] == 'T') && (candidate[j]) == 'A') {
-                            score = 1;
-                        }
-                        else if ((sample[j] == 'C') && (candidate[j]) == 'G') {
-                            score = 1;
-                        }
-                        else if ((sample[j] == 'G') && (candidate[j]) == 'C') {
-                            score = 1;
+                        else if (is_base_pair(sample_segment[j], candidate_segment[j]) == 1) {
+                            score += 1;
                         }
                     }
                 }
             }
+            sample += 3;
+            candidate += 3; //Move them forward to compare
+            if (score > best_score) {
+                best_score = score;
+            }
         }
-        if (score >= best_score) {
-            best_score = score;
-        }
+        return best_score;
     }
-
-    return best_score;
 }
