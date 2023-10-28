@@ -368,22 +368,19 @@ int calculate_score(char* sample_segment, char* candidate_segment)
             candidate[1] = candidate_segment[iterations + i + 1];
             candidate[2] = candidate_segment[iterations + i + 2];
 
+            
+            index_sample = get_codon_index(sample);
+            index_candidate = get_codon_index(candidate);
 
 
-
-            if (strncmp(sample_segment + 1, candidate_segment + (iterations +i), 3) == 0) {
+            if (strncmp((sample_segment + i), candidate_segment + (iterations +i), 3) == 0) {
                 score += 10;
             }
-            else {
-                char amino_a[3] = {0, 0, 0}; //Check whether sample/candidate are aminos
-                char amino_b[3] = {0, 0, 0};
-                strncpy(amino_a, sample, 3);
-                strncpy(amino_b, candidate, 3);
-
-                if (strncmp(amino_a, amino_b, 3) == 0) {
+            else if {
+                (strncmp(codon_names[index_sample], codon_names[index_candidate]) == 0) {
                     score += 5;
                 }
-                else {
+            else {
                     for (int j = 0; j < 3; j++) { //If it's not a perfect match, or an amino, check for same letter
                         if (sample_segment[j] == candidate_segment[j]) {
                             score += 2;
@@ -394,8 +391,6 @@ int calculate_score(char* sample_segment, char* candidate_segment)
                     }
                 }
             }
-            sample += 3;
-            candidate += 3; //Move them forward to compare
             if (score > best_score) {
                 best_score = score;
             }
