@@ -358,16 +358,27 @@ int calculate_score(char* sample_segment, char* candidate_segment)
         char* sample = sample_segment;
         char* candidate = candidate_segment + iterations;
 
-        for (int i = 0; i < sample_length_in_codons; i++) { //Need to know amount of codons, helps compare codon one in segment, then codon two
+        for (int i = 0; i < sample_length; i+=3 ) { //Need to know amount of codons, helps compare codon one in segment, then codon two
 
-            if (strncmp(sample, candidate, 3) == 0) {
+            sample[0] = sample_segment[i];
+            sample[1] = sample_segment[i + 1];
+            sample[2] = sample_segment[i + 2];
+
+            candidate[0] = candidate_segment[iterations + i];
+            candidate[1] = candidate_segment[iterations + i + 1];
+            candidate[2] = candidate_segment[iterations + i + 2];
+
+
+
+
+            if (strncmp(sample_segment + 1, candidate_segment + (iterations +i), 3) == 0) {
                 score += 10;
             }
             else {
                 char amino_a[3] = {0, 0, 0}; //Check whether sample/candidate are aminos
                 char amino_b[3] = {0, 0, 0};
                 strncpy(amino_a, sample, 3);
-                strncpy(amino_b, sample, 3);
+                strncpy(amino_b, candidate, 3);
 
                 if (strncmp(amino_a, amino_b, 3) == 0) {
                     score += 5;
