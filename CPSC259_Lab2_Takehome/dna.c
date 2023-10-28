@@ -376,8 +376,7 @@ int calculate_score(char* sample_segment, char* candidate_segment)
             if (strncmp((sample_segment + i), candidate_segment + (iterations +i), 3) == 0) {
                 score += 10;
             }
-            else if {
-                (strncmp(codon_names[index_sample], codon_names[index_candidate]) == 0) {
+            else if (strncmp(codon_names[index_sample], codon_names[index_candidate]) == 0) {
                     score += 5;
                 }
             else {
