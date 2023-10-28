@@ -369,8 +369,8 @@ int calculate_score(char* sample_segment, char* candidate_segment)
             candidate[2] = candidate_segment[iterations + i + 2];
 
             
-            index_sample = get_codon_index(sample);
-            index_candidate = get_codon_index(candidate);
+            int index_sample = get_codon_index(sample);
+            int index_candidate = get_codon_index(candidate);
 
 
             if (strncmp((sample_segment + i), candidate_segment + (iterations +i), 3) == 0) {
